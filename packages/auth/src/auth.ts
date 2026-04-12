@@ -1,5 +1,5 @@
-import { db } from "@modflix/db"
-import { serverEnv } from "@modflix/env"
+import { db } from "@repo/db"
+import { serverEnv } from "@repo/env"
 import { betterAuth } from "better-auth"
 import { drizzleAdapter } from "better-auth/adapters/drizzle"
 import { admin, username } from "better-auth/plugins"

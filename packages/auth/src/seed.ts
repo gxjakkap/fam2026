@@ -1,7 +1,7 @@
 import * as readline from "node:readline/promises"
-import { db } from "@modflix/db"
-import { eq } from "@modflix/db/orm"
-import { user } from "@modflix/db/schema"
+import { db } from "@repo/db"
+import { eq } from "@repo/db/orm"
+import { user } from "@repo/db/schema"
 
 import { auth } from "./auth"
 import { Roles } from "./roles"
