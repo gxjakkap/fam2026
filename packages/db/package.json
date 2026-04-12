@@ -1,0 +1,37 @@
+{
+	"name": "@repo/db",
+	"version": "0.0.0",
+	"private": true,
+	"main": "src/index.ts",
+	"type": "module",
+	"exports": {
+		".": "./src/index.ts",
+		"./orm": "./src/orm.ts",
+		"./schema": "./src/schema.ts"
+	},
+	"files": [
+		"src/**/*"
+	],
+	"scripts": {
+		"db:check": "drizzle-kit check --config=src/drizzle.config.ts",
+		"db:dz:gen": "drizzle-kit generate --config=src/drizzle.config.ts",
+		"db:migrate": "tsx ./scripts/migrate.ts",
+		"db:gen-schema": "tsx ./scripts/gen-schema.ts",
+		"db:generate": "run-s db:gen-schema db:dz:gen"
+	},
+	"dependencies": {
+		"@repo/env": "workspace:*",
+		"drizzle-orm": "^0.36.4",
+		"pg": "^8.13.1",
+		"postgres": "^3.4.5"
+	},
+	"devDependencies": {
+		"@repo/biome-config": "workspace:*",
+		"@types/pg": "^8.11.10",
+		"dotenv": "^17.2.1",
+		"drizzle-kit": "^0.28.1",
+		"npm-run-all2": "^8.0.4",
+		"tsx": "^4.19.2",
+		"typescript": "^5.2.2"
+	}
+}
