@@ -29,18 +29,19 @@ RUN bun build --compile ./packages/db/scripts/migrate.ts --outfile ./migrate --m
 FROM oven/bun:latest AS runner
 WORKDIR /app
 
-COPY --from=builder /app/apps/web/public ./apps/web/public
-COPY --from=builder /app/apps/web/.next/standalone ./
-COPY --from=builder /app/apps/web/.next/static ./apps/web/.next/static
-
-# Copy standalone migration runner and sql files
-COPY --from=builder /app/packages/db/drizzle ./drizzle
-COPY --from=builder /app/migrate ./migrate
-
 RUN groupadd --system --gid 1001 bunuser \
   && useradd --system --uid 1001 --gid bunuser --create-home bunuser \
   && mkdir -p /home/bunuser \
   && chown bunuser:bunuser /home/bunuser
+
+COPY --from=builder --chown=bunuser:bunuser /app/apps/web/public ./apps/web/public
+COPY --from=builder --chown=bunuser:bunuser /app/apps/web/.next/standalone ./
+COPY --from=builder --chown=bunuser:bunuser /app/apps/web/.next/static ./apps/web/.next/static
+
+# Copy standalone migration runner and sql files
+COPY --from=builder --chown=bunuser:bunuser /app/packages/db/drizzle ./drizzle
+COPY --from=builder --chown=bunuser:bunuser /app/migrate ./migrate
+
 USER bunuser
 
 EXPOSE 8080
