@@ -36,6 +36,8 @@ COPY --from=builder /app/packages/db/drizzle ./packages/db/drizzle
 COPY --from=builder /app/packages/db/scripts/migrate.ts ./packages/db/scripts/migrate.ts
 COPY --from=builder /app/packages/db/package.json ./packages/db/package.json
 COPY --from=builder /app/packages/env ./packages/env
+COPY --from=builder /app/package.json ./package.json
+COPY --from=builder /app/node_modules ./node_modules
 
 RUN groupadd --system --gid 1001 bunuser \
   && useradd --system --uid 1001 --gid bunuser --create-home bunuser \
