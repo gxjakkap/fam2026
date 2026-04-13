@@ -1,4 +1,4 @@
-import { serverEnv } from "@modflix/env"
+import { serverEnv } from "@repo/env"
 import { drizzle } from "drizzle-orm/node-postgres/driver"
 import { migrate } from "drizzle-orm/node-postgres/migrator"
 import pg from "pg"
