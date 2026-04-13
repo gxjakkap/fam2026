@@ -35,7 +35,7 @@ COPY --from=builder /app/apps/web/.next/static ./apps/web/.next/static
 
 # Copy standalone migration runner and sql files
 COPY --from=builder /app/packages/db/drizzle ./drizzle
-COPY --from=builder /app/migrate-bin ./migrate-bin
+COPY --from=builder /app/migrate ./migrate
 
 RUN groupadd --system --gid 1001 bunuser \
   && useradd --system --uid 1001 --gid bunuser --create-home bunuser \
