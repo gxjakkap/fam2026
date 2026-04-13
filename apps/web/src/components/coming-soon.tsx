@@ -8,7 +8,7 @@ const inconsolata = Inconsolata({
 export function ComingSoon() {
     return (
         <div className="w-full min-h-dvh flex flex-col justify-center items-center overflow-hidden relative">
-            <div className="fixed inset-0 w-full h-full bg-[url('/water-glimmer.webp')] bg-cover bg-center bg-no-repeat -z-10" />
+            <div className="fixed inset-0 w-full h-full bg-[url('https://fam-assets.cpesu.com/web-assets/water-glimmer.webp')] bg-cover bg-center bg-no-repeat -z-10" />
             <div className="flex flex-col md:flex-row gap-y-2 md:gap-x-4 justify-center items-center text-center px-4 w-full">
                 <div className="flex flex-row items-end z-10 justify-center gap-x-2">
                     <img src={"https://fam-assets.cpesu.com/web-assets/text-cpe.webp"} alt="CPE" className="h-20 sm:h-24 md:h-24 lg:h-36 xl:h-44 object-contain" />
