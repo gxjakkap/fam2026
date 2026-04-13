@@ -34,6 +34,7 @@ RUN groupadd --system --gid 1001 bunuser \
   && mkdir -p /home/bunuser \
   && chown bunuser:bunuser /home/bunuser
 
+COPY --from=builder --chown=bunuser:bunuser /app/apps/web/public ./apps/web/public
 COPY --from=builder --chown=bunuser:bunuser /app/apps/web/.next/standalone ./
 COPY --from=builder --chown=bunuser:bunuser /app/apps/web/.next/static ./apps/web/.next/static
 
