@@ -15,7 +15,7 @@ services:
       retries: 5
 
   web:
-    image: ghcr.io/gxjakkap/fam2026-web:latest
+    image: ghcr.io/gxjakkap/fam2026:latest
     restart: unless-stopped
     depends_on:
       postgres:
