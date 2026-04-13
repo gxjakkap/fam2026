@@ -13,12 +13,9 @@ export const serverEnv = createEnv({
 
 		// Auth
 		BETTER_AUTH_SECRET: z.string().min(1),
-		BETTER_AUTH_URL: z.url(),
-    API_URL: z.url().default("http://localhost:3000"),
-
-    // Port
-    API_PORT: z.number().default(3000)
+		BETTER_AUTH_URL: z.string().url(),
 	},
 	runtimeEnv: process.env,
 	emptyStringAsUndefined: true,
+	skipValidation: !!process.env.SKIP_ENV_VALIDATION,
 })

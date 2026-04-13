@@ -1,13 +1,12 @@
-/// <reference types="vite/client" />
-import { createEnv } from "@t3-oss/env-core"
+import { createEnv } from "@t3-oss/env-nextjs"
 import { z } from "zod"
 
 export const clientEnv = createEnv({
-	clientPrefix: "VITE_",
 	client: {
-		VITE_API_URL: z.url().default("http://localhost:3000"),
-		VITE_BETTER_AUTH_URL: z.url().default("http://localhost:3000"),
+		NEXT_PUBLIC_APP_URL: z.url().default("http://localhost:3000"),
 	},
-	runtimeEnv: import.meta.env,
+	runtimeEnv: {
+		NEXT_PUBLIC_APP_URL: process.env.NEXT_PUBLIC_APP_URL,
+	},
 	emptyStringAsUndefined: true,
 })

@@ -47,6 +47,6 @@ export const auth = betterAuth({
 		}),
 	],
 	trustedOrigins: [
-		serverEnv.API_URL,
+		serverEnv.BETTER_AUTH_URL,
 	],
 })
