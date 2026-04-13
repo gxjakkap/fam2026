@@ -29,7 +29,7 @@ RUN bun build --compile ./packages/db/scripts/migrate.ts --outfile ./migrate --m
 FROM oven/bun:latest AS runner
 WORKDIR /app
 
-COPY --from=builder /app/apps/web/public ./public
+COPY --from=builder /app/apps/web/public ./apps/web/public
 COPY --from=builder /app/apps/web/.next/standalone ./
 COPY --from=builder /app/apps/web/.next/static ./apps/web/.next/static
 
