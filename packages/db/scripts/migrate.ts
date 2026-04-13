@@ -1,4 +1,3 @@
-import { serverEnv } from "@repo/env"
 import { drizzle } from "drizzle-orm/node-postgres/driver"
 import { migrate } from "drizzle-orm/node-postgres/migrator"
 import pg from "pg"
@@ -6,11 +5,11 @@ import pg from "pg"
 const { Pool } = pg
 
 const pool = new Pool({
-	user: serverEnv.PG_USER,
-	password: serverEnv.PG_PASSWORD,
-	host: serverEnv.PG_MIGRATE_HOST ?? serverEnv.PG_HOST,
-	port: serverEnv.PG_PORT,
-	database: serverEnv.PG_DBNAME,
+	user: process.env.PG_USER,
+	password: process.env.PG_PASSWORD,
+	host: process.env.PG_MIGRATE_HOST ?? process.env.PG_HOST,
+	port: Number(process.env.PG_PORT ?? 5432),
+	database: process.env.PG_DBNAME,
 })
 
 const db = drizzle(pool)
@@ -27,3 +26,4 @@ async function runMigrations() {
 }
 
 runMigrations()
+

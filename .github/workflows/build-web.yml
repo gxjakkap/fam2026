@@ -3,6 +3,7 @@ on:
     push:
         paths:
             - "apps/web/**/*"
+            - "packages/**/*"
             - "package.json"
             - ".github/workflows/**/*"
 env:
