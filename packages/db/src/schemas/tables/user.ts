@@ -17,4 +17,5 @@ export const user = pgTable("user", {
 	banned: boolean("banned").default(false),
 	banReason: text("ban_reason"),
 	banExpires: timestamp("ban_expires"),
+	bypassCountdown: boolean("bypass_countdown").notNull().default(false)
 })
