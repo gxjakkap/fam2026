@@ -202,5 +202,13 @@ export async function slipUploadAction(slipFile: File, paymentId: string): Promi
 		return { status: 500, err: SlipUploadActionError.UnknownError }
 	}
 
+	void fetch(process.env.APPS_SCRIPT_ENDPOINT || "", {
+		method: "POST",
+		body: JSON.stringify({
+			act: "sps",
+			paymentId: paymentId,
+		}),
+	})
+
 	return { status: 200 }
 }
