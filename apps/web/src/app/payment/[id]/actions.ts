@@ -121,12 +121,12 @@ const verifySlip = async (
 		success: true,
 		data: {
 			transRef: dataRes.transRef,
-			amount: dataRes.amount,
+			amount: String(dataRes.amount),
 			sendingBank: dataRes.sendingBank,
-			senderName: dataRes.sender?.name ?? "",
-			receivingProxy: dataRes.receiver?.proxy.value ?? "",
-			transDate: dataRes.date ?? "",
-			transTime: dataRes.time ?? "",
+			senderName: dataRes.sender?.displayName ?? dataRes.sender?.name ?? "",
+			receivingProxy: dataRes.receiver?.proxy?.value ?? "",
+			transDate: dataRes.transDate ?? "",
+			transTime: dataRes.transTime ?? "",
 			raw: body,
 		},
 	}
@@ -158,16 +158,25 @@ export async function slipUploadAction(slipFile: File, paymentId: string): Promi
 	}
 
 	// check transaction time
-	if (isBefore(new Date(slipVerifyResult.data.transDate), row.createdAt)) {
-		return { status: 400, err: SlipUploadActionError.InvalidSlip }
-	}
-	// check for amount
-	if (parseFloat(slipVerifyResult.data.amount) !== parseFloat(row.price)) {
+	const [y, m, d] = [
+		slipVerifyResult.data.transDate.slice(0, 4),
+		slipVerifyResult.data.transDate.slice(4, 6),
+		slipVerifyResult.data.transDate.slice(6, 8),
+	]
+	const transDateObj = new Date(`${y}-${m}-${d}T${slipVerifyResult.data.transTime}+07:00`)
+
+	if (isBefore(transDateObj, row.createdAt)) {
+		console.log("Slip was created before the payment:", { transDateObj, createdAt: row.createdAt })
 		return { status: 400, err: SlipUploadActionError.InvalidSlip }
 	}
 
 	// check for receiver
-	if (slipVerifyResult.data.receivingProxy.slice(-4) !== process.env.PROMPTPAY_ID?.slice(-4)) {
+	const promptPayId = process.env.PROMPTPAY_ID || ""
+	if (slipVerifyResult.data.receivingProxy.slice(-4) !== promptPayId.slice(-4)) {
+		console.log("Receiver mismatch:", {
+			received: slipVerifyResult.data.receivingProxy,
+			expectedTail: promptPayId.slice(-4),
+		})
 		return { status: 400, err: SlipUploadActionError.InvalidSlip }
 	}
 
