@@ -3,13 +3,17 @@ services:
     image: postgres:18-alpine
     restart: unless-stopped
     volumes:
-      - pg_data:/var/lib/postgresql/data
+      - pg_data:/var/lib/postgresql
     environment:
       POSTGRES_DB: ${PG_DBNAME:-fam2026}
       POSTGRES_USER: ${PG_USER:-postgres}
       POSTGRES_PASSWORD: ${PG_PASSWORD:?PG_PASSWORD is required}
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U ${PG_USER:-postgres} -d ${PG_DBNAME:-fam2026}"]
+      test:
+        [
+          "CMD-SHELL",
+          "pg_isready -U ${PG_USER:-postgres} -d ${PG_DBNAME:-fam2026}",
+        ]
       interval: 10s
       timeout: 5s
       retries: 5
