@@ -26,22 +26,25 @@ COPY --from=pruner /app/out/full/ ./
 RUN bun run build --filter=web
 
 
-FROM oven/bun:1.3.9 AS runner
+FROM node:22-bookworm-slim AS runner
 WORKDIR /app
 
-RUN groupadd --system --gid 1001 bunuser \
-  && useradd --system --uid 1001 --gid bunuser --create-home bunuser \
-  && mkdir -p /home/bunuser \
-  && chown bunuser:bunuser /home/bunuser
+RUN apt-get update -y && apt-get install -y --no-install-recommends \
+  libc6 libvips curl ca-certificates && \
+  rm -rf /var/lib/apt/lists/*
 
-COPY --from=builder --chown=bunuser:bunuser /app/apps/web/public ./apps/web/public
-COPY --from=builder --chown=bunuser:bunuser /app/apps/web/.next/standalone ./
-COPY --from=builder --chown=bunuser:bunuser /app/apps/web/.next/static ./apps/web/.next/static
+RUN groupadd --system --gid 1001 nextjs \
+  && useradd --system --uid 1001 --gid nextjs --create-home nextjs
 
-USER bunuser
+COPY --from=builder --chown=nextjs:nextjs /app/apps/web/public ./apps/web/public
+COPY --from=builder --chown=nextjs:nextjs /app/apps/web/.next/standalone ./
+COPY --from=builder --chown=nextjs:nextjs /app/apps/web/.next/static ./apps/web/.next/static
+
+USER nextjs
+
+ENV NODE_ENV=production
+ENV HOSTNAME=0.0.0.0
 
 EXPOSE 3000
-ENV NODE_ENV=production
-ENV HOSTNAME="0.0.0.0"
 
-CMD ["bun", "apps/web/server.js"]
+CMD ["node", "apps/web/server.js"]
