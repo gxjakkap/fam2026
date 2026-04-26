@@ -56,7 +56,7 @@ const verifySlip = async (data: { payload?: string; file?: File | Buffer }, amou
 				formData.append("file", data.file)
 			} else {
 				// Buffer
-				formData.append("file", new Blob([data.file]), "slip.jpg")
+				formData.append("file", new Blob([new Uint8Array(data.file)]), "slip.jpg")
 			}
 			body = formData
 			// Fetch will set the correct Content-Type with boundary for FormData
