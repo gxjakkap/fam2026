@@ -45,7 +45,7 @@ COPY --from=builder --chown=bunuser:bunuser /app/migrate ./migrate
 
 USER bunuser
 
-EXPOSE 8080
+EXPOSE 3037
 ENV NODE_ENV=production
 ENV PORT=3037
 ENV HOSTNAME="0.0.0.0"
