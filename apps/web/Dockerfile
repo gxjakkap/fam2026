@@ -15,7 +15,7 @@ FROM base AS deps
 
 COPY --from=pruner /app/out/json/ ./
 COPY --from=pruner /app/bun.lock ./
-RUN bun install --frozen-lockfile
+RUN bun install
 
 FROM deps AS builder
 
