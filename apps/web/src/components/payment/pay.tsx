@@ -143,8 +143,42 @@ export function PaymentPay({
 			<Dialog open={status === "success"}>
 				<DialogContent>
 					<DialogHeader>
-						<DialogTitle className="text-center text-green-500">สำเร็จ!</DialogTitle>
-						<DialogDescription className="text-center">ชำระเงินสำเร็จ คุณสามารถปิดหน้านี้ได้</DialogDescription>
+						<DialogTitle className="text-center">ชำระเงินสำเร็จ!</DialogTitle>
+						<DialogDescription className="text-center">
+							<div className="flex flex-col gap-4 pt-2">
+								<div className="p-3 text-primary">
+									<p className="text-sm font-semibold">อีเมลยืนยันการชำระเงินจะถูกส่งถึงคุณภายใน 10 นาที</p>
+								</div>
+
+								<div className="space-y-1">
+									<div className="font-medium text-foreground">
+										อย่าลืมเข้าร่วม <span className="text-green-600 font-bold">LINE Openchat</span>
+									</div>
+									<p className="text-sm">เพื่อติดตามข่าวสารการเดินทางและการนัดหมาย</p>
+								</div>
+
+								<div className="mx-auto w-full max-w-[300px] space-y-3 p-4 border">
+									<a
+										href="https://dekcpe.link/fam26opc"
+										target="_blank"
+										rel="noopener noreferrer"
+										className="flex items-center justify-center gap-2 text-primary underline hover:text-blue-600 font-semibold"
+									>
+										🔗 dekcpe.link/fam26opc
+									</a>
+									<div className="flex items-center justify-center gap-2 text-xs">
+										<span className="text-muted-foreground tracking-wider">Password:</span>
+										<code className="bg-background border border-border px-2 py-0.5 font-mono font-bold text-foreground">
+											cpefam67
+										</code>
+									</div>
+								</div>
+
+								<p className="text-[10px] uppercase tracking-widest text-muted-foreground font-medium pt-2">
+									คุณสามารถปิดหน้านี้ได้
+								</p>
+							</div>
+						</DialogDescription>
 					</DialogHeader>
 				</DialogContent>
 			</Dialog>
