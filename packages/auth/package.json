@@ -7,6 +7,8 @@
 		".": "./src/index.ts",
 		"./client": "./src/client.ts",
 		"./better-auth": "./src/bta.ts",
+		"./better-auth-client": "./src/btac.ts",
+		"./better-auth-react": "./src/btareact.ts",
 		"./roles": "./src/roles.ts"
 	},
 	"types": "src/index.ts",

@@ -1,7 +1,7 @@
-import { adminClient, usernameClient } from "better-auth/client/plugins"
-import { createAuthClient } from "better-auth/react"
+import { adminClient, usernameClient } from "@repo/auth/better-auth-client"
+import { createAuthClient } from "@repo/auth/better-auth-react"
 
 export const authClient = createAuthClient({
-	baseURL: process.env.NEXT_PUBLIC_STAFFAPP_BASEURL,
+	baseURL: process.env.NODE_ENV === "development" ? "http://localhost:3037" : "https://famstaff.cpesu.com/",
 	plugins: [usernameClient(), adminClient()],
 })

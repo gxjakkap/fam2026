@@ -1,4 +1,4 @@
-FROM oven/bun:latest AS base
+FROM oven/bun:1.3.9 AS base
 WORKDIR /app
 
 RUN apt-get update -y && apt-get install -y --no-install-recommends \
@@ -7,14 +7,15 @@ RUN apt-get update -y && apt-get install -y --no-install-recommends \
 
 FROM base AS pruner
 
-RUN bun install -g turbo@latest
+RUN bun install -g turbo@2.9.6
 COPY . .
 RUN turbo prune staff --docker
 
 FROM base AS deps
 
 COPY --from=pruner /app/out/json/ ./
-RUN bun install --frozen-lockfile
+COPY --from=pruner /app/bun.lock ./
+RUN bun install
 
 FROM deps AS builder
 
@@ -26,7 +27,7 @@ RUN bun run build --filter=staff
 # Compile the migrate script into a standalone executable inside the builder
 RUN bun build --compile ./packages/db/scripts/migrate.ts --outfile ./migrate --minify
 
-FROM oven/bun:latest AS runner
+FROM oven/bun:1.3.9 AS runner
 WORKDIR /app
 
 RUN groupadd --system --gid 1001 bunuser \
