@@ -99,9 +99,10 @@ export function PaymentPay({
 						</div>
 						<Separator />
 						{/* Payment QR Image */}
-						<div className="flex justify-center py-4">
+						<div className="relative flex justify-center py-4">
 							{/** biome-ignore lint/performance/noImgElement: <> */}
 							<img src={qrLink} alt="Payment QR" className="w-48 h-48 object-contain" />
+							<img src="/Thai_QR_Logo.svg" alt="Thai QR Logo" className="absolute inset-0 m-auto w-16 h-16" />
 						</div>
 						<p className="text-center text-sm text-muted-foreground">สแกนจ่าย หรือ {promptpayInfo}</p>
 						<Separator />

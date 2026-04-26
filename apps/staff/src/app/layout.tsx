@@ -1,50 +1,43 @@
-import type { Metadata } from "next";
-import { Toaster } from "sonner";
+import type { Metadata } from "next"
+import { Toaster } from "sonner"
 
-import ReactQueryProvider from "@/components/providers/react-query";
-import { cn } from "@/lib/utils";
+import ReactQueryProvider from "@/components/providers/react-query"
+import { cn } from "@/lib/utils"
 
-import "./globals.css";
+import "./globals.css"
 
-import { NuqsAdapter } from "nuqs/adapters/next/app";
+import { NuqsAdapter } from "nuqs/adapters/next/app"
 
-import { ThemeProvider } from "@/components/providers/theme";
-import { inter, LineSeedSans, sarabun } from "@/fonts";
+import { ThemeProvider } from "@/components/providers/theme"
+import { inter, LineSeedSans, sarabun } from "@/fonts"
 
 export const metadata: Metadata = {
-  title: "CC36 Staff",
-};
+	title: "CPE Family 2026 Staff",
+}
 
 export default function RootLayout({
-  children,
+	children,
 }: Readonly<{
-  children: React.ReactNode;
+	children: React.ReactNode
 }>) {
-  return (
-    <html lang="en">
-      <body
-        className={cn(
-          "font-line-seed-sans antialiased",
-          LineSeedSans.variable,
-          sarabun.variable,
-          inter.variable,
-        )}
-      >
-        <ThemeProvider
-          attribute="class"
-          defaultTheme="system"
-          enableSystem
-          disableTransitionOnChange
-          themes={["light", "dark", "reading"]}
-        >
-          <ReactQueryProvider>
-            <NuqsAdapter>
-              {children}
-              <Toaster richColors />
-            </NuqsAdapter>
-          </ReactQueryProvider>
-        </ThemeProvider>
-      </body>
-    </html>
-  );
+	return (
+		<html lang="en">
+			<body className={cn("font-line-seed-sans antialiased", LineSeedSans.variable, sarabun.variable, inter.variable)}>
+				<ThemeProvider
+					attribute="class"
+					defaultTheme="system"
+					enableSystem
+					disableTransitionOnChange
+					themes={["light", "dark", "reading"]}
+				>
+					<ReactQueryProvider>
+						<NuqsAdapter>
+							{children}
+							<Toaster richColors />
+						</NuqsAdapter>
+					</ReactQueryProvider>
+				</ThemeProvider>
+			</body>
+		</html>
+	)
 }

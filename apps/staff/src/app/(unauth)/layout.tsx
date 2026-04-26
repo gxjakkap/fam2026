@@ -1,25 +1,24 @@
-import type { Metadata } from "next";
-import { headers } from "next/headers";
-import { redirect } from "next/navigation";
-
-import { auth } from "@repo/auth";
+import { auth } from "@repo/auth"
+import type { Metadata } from "next"
+import { headers } from "next/headers"
+import { redirect } from "next/navigation"
 
 export const metadata: Metadata = {
-  title: "CC36 Staff",
-};
+	title: "CPE Family 2026 Staff",
+}
 
 export default async function UnauthenticatedLayout({
-  children,
+	children,
 }: Readonly<{
-  children: React.ReactNode;
+	children: React.ReactNode
 }>) {
-  const session = await auth.api.getSession({
-    headers: await headers(),
-  });
+	const session = await auth.api.getSession({
+		headers: await headers(),
+	})
 
-  if (session) {
-    redirect("/");
-  }
+	if (session) {
+		redirect("/")
+	}
 
-  return <>{children}</>;
+	return <>{children}</>
 }

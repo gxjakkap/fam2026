@@ -25,6 +25,7 @@ export function shapeErrors({ err }: any) {
 
 export const unauthenticatedAction = createServerActionProcedure()
 	.experimental_shapeError(shapeErrors)
+	// biome-ignore lint/suspicious/noEmptyBlockStatements: <>
 	.handler(async () => {})
 
 export const authenticatedAction = createServerActionProcedure()
