@@ -5,8 +5,6 @@ import { PutObjectCommand, S3Client } from "@aws-sdk/client-s3"
 import { db } from "@repo/db"
 import { eq } from "@repo/db/orm"
 import { file, payment, paymentSlip, paymentSlipStatusEnum, paymentStatusEnum } from "@repo/db/schema"
-import { Jimp } from "jimp"
-import jsQR from "jsqr"
 import { SlipUploadActionError, type SlipUploadActionRes } from "./types"
 
 enum SlipVerifyError {
@@ -35,25 +33,42 @@ interface SlipVerifyFailure {
 
 type SlipVerifyResult = SlipVerifySuccess | SlipVerifyFailure
 
-const verifySlip = async (payload: string, amount: number): Promise<SlipVerifyResult> => {
+const verifySlip = async (data: { payload?: string; file?: File | Buffer }, amount: number): Promise<SlipVerifyResult> => {
 	const endpoint = "https://suba.rdcw.co.th/v2/inquiry"
 
 	console.log("RDCW config:", {
 		hasClientId: !!process.env.RDCW_CLIENT_ID,
 		hasClientSecret: !!process.env.RDCW_CLIENT_SECRET,
 		hasEndpoint: !!endpoint,
+		useFile: !!data.file,
 	})
 
-	// biome-ignore lint/suspicious/noImplicitAnyLet: <>
 	let res
 	try {
+		const headers: Record<string, string> = {
+			Authorization: `Basic ${btoa(`${process.env.RDCW_CLIENT_ID}:${process.env.RDCW_CLIENT_SECRET}`)}`,
+		}
+
+		let body: any
+		if (data.file) {
+			const formData = new FormData()
+			if (data.file instanceof File) {
+				formData.append("file", data.file)
+			} else {
+				// Buffer
+				formData.append("file", new Blob([data.file]), "slip.jpg")
+			}
+			body = formData
+			// Fetch will set the correct Content-Type with boundary for FormData
+		} else {
+			headers["Content-Type"] = "application/json"
+			body = JSON.stringify({ payload: data.payload })
+		}
+
 		res = await fetch(endpoint, {
 			method: "POST",
-			headers: {
-				"Content-Type": "application/json",
-				Authorization: `Basic ${btoa(`${process.env.RDCW_CLIENT_ID}:${process.env.RDCW_CLIENT_SECRET}`)}`,
-			},
-			body: JSON.stringify({ payload }),
+			headers,
+			body,
 		})
 	} catch (fetchErr) {
 		console.error("RDCW fetch error:", fetchErr)
@@ -89,9 +104,9 @@ const verifySlip = async (payload: string, amount: number): Promise<SlipVerifyRe
 		return { success: false, err: SlipVerifyError.InvalidSlipOrQr }
 	}
 
-	const data = body.data
-	console.log("RDCW data amount:", data?.amount)
-	const returnedAmount = parseFloat(data?.amount)
+	const dataRes = body.data
+	console.log("RDCW data amount:", dataRes?.amount)
+	const returnedAmount = parseFloat(dataRes?.amount)
 
 	if (returnedAmount !== amount) {
 		return { success: false, err: SlipVerifyError.InvalidSlipOrQr }
@@ -100,35 +115,33 @@ const verifySlip = async (payload: string, amount: number): Promise<SlipVerifyRe
 	return {
 		success: true,
 		data: {
-			transRef: data.transRef,
-			amount: data.amount,
-			sendingBank: data.sendingBank,
-			senderName: data.sender?.name ?? "",
-			transDate: data.date ?? "",
-			transTime: data.time ?? "",
+			transRef: dataRes.transRef,
+			amount: dataRes.amount,
+			sendingBank: dataRes.sendingBank,
+			senderName: dataRes.sender?.name ?? "",
+			transDate: dataRes.date ?? "",
+			transTime: dataRes.time ?? "",
 			raw: body,
 		},
 	}
 }
 
 export async function slipUploadAction(slipFile: File, paymentId: string): Promise<SlipUploadActionRes> {
+	console.log(">>> ACTION START: slipUploadAction", { paymentId, fileName: slipFile?.name, fileSize: slipFile?.size })
+
 	const [row] = await db.select().from(payment).where(eq(payment.id, paymentId)).limit(1)
 
-	if (!row) return { status: 400, err: SlipUploadActionError.ForbiddenError }
-
-	const fileBuffer = Buffer.from(await slipFile.arrayBuffer())
-	const image = await Jimp.read(fileBuffer)
-	const { data: imageData, width: imageWidth, height: imageHeight } = image.bitmap
-	const qrRes = jsQR(new Uint8ClampedArray(imageData), imageWidth, imageHeight)
-
-	if (!qrRes) {
-		return { status: 400, err: SlipUploadActionError.InvalidSlip }
+	if (!row) {
+		console.log("Payment not found:", paymentId)
+		return { status: 400, err: SlipUploadActionError.ForbiddenError }
 	}
 
-	const refNbr = qrRes.data
-	const slipVerifyResult = await verifySlip(refNbr, parseFloat(row.price))
+	const fileBuffer = Buffer.from(await slipFile.arrayBuffer())
 
-	console.log("Slip verify:", { refNbr, price: row.price, result: slipVerifyResult })
+	// Use RDCW direct image inquiry
+	const slipVerifyResult = await verifySlip({ file: slipFile }, parseFloat(row.price))
+
+	console.log("Slip verify result:", { paymentId, success: slipVerifyResult.success })
 
 	if (!slipVerifyResult.success) {
 		if (slipVerifyResult.err === SlipVerifyError.InvalidSlipOrQr)
