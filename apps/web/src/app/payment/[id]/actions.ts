@@ -6,6 +6,7 @@ import { db } from "@repo/db"
 import { eq } from "@repo/db/orm"
 import { file, payment, paymentSlip, paymentSlipStatusEnum, paymentStatusEnum } from "@repo/db/schema"
 import { isBefore } from "date-fns"
+import { logEventToWebhook } from "@/lib/discord-webhook"
 import { SlipUploadActionError, type SlipUploadActionRes } from "./types"
 
 enum SlipVerifyError {
@@ -48,12 +49,14 @@ const verifySlip = async (
 		useFile: !!data.file,
 	})
 
+	// biome-ignore lint/suspicious/noImplicitAnyLet: <>
 	let res
 	try {
 		const headers: Record<string, string> = {
 			Authorization: `Basic ${btoa(`${process.env.RDCW_CLIENT_ID}:${process.env.RDCW_CLIENT_SECRET}`)}`,
 		}
 
+		// biome-ignore lint/suspicious/noExplicitAny: <>
 		let body: any
 		if (data.file) {
 			const formData = new FormData()
@@ -139,6 +142,7 @@ export async function slipUploadAction(slipFile: File, paymentId: string): Promi
 
 	if (!row) {
 		console.log("Payment not found:", paymentId)
+		void logEventToWebhook(`Payment Error`, `Error: PaymentIDNotFound\n\nDetails\nPaymentID: ${paymentId}`)
 		return { status: 400, err: SlipUploadActionError.ForbiddenError }
 	}
 
@@ -150,11 +154,22 @@ export async function slipUploadAction(slipFile: File, paymentId: string): Promi
 	console.log("Slip verify result:", { paymentId, success: slipVerifyResult.success })
 
 	if (!slipVerifyResult.success) {
-		if (slipVerifyResult.err === SlipVerifyError.InvalidSlipOrQr)
+		if (slipVerifyResult.err === SlipVerifyError.InvalidSlipOrQr) {
+			void logEventToWebhook(
+				`Payment Error`,
+				`Error: ProviderInvalidSlipError\n\nDetails\nPaymentID: ${paymentId}\nName: ${row.payerName}\nEmail:${row.payerEmail}\nPrice: ${row.price}`,
+			)
 			return { status: 400, err: SlipUploadActionError.InvalidSlip }
-		else if (slipVerifyResult.err === SlipVerifyError.RateLimitError)
+		} else if (slipVerifyResult.err === SlipVerifyError.RateLimitError) {
+			void logEventToWebhook(`Payment Error`, `Error: ProviderRateLimitError\n\nTime to top up ig.`)
 			return { status: 429, err: SlipUploadActionError.ProviderRateLimited }
-		else return { status: 500, err: SlipUploadActionError.UnknownError }
+		} else {
+			void logEventToWebhook(
+				`Payment Error`,
+				`Error: ProviderUnknownError\n\nDetails\nPaymentID: ${paymentId}\nName: ${row.payerName}\nEmail:${row.payerEmail}\nPrice: ${row.price}\nError: ${slipVerifyResult.err.toString()}`,
+			)
+			return { status: 500, err: SlipUploadActionError.UnknownError }
+		}
 	}
 
 	// check transaction time
@@ -167,6 +182,10 @@ export async function slipUploadAction(slipFile: File, paymentId: string): Promi
 
 	if (isBefore(transDateObj, row.createdAt)) {
 		console.log("Slip was created before the payment:", { transDateObj, createdAt: row.createdAt })
+		void logEventToWebhook(
+			`Payment Error`,
+			`Error: SlipDateInconsistentError\n\nDetails\nPaymentID: ${paymentId}\nName: ${row.payerName}\nEmail:${row.payerEmail}\nPrice: ${row.price}\nPaymentCreated: ${row.createdAt.toISOString()}\nSlipTransactionTimestamp: ${transDateObj.toISOString()}`,
+		)
 		return { status: 400, err: SlipUploadActionError.InvalidSlip }
 	}
 
@@ -177,6 +196,10 @@ export async function slipUploadAction(slipFile: File, paymentId: string): Promi
 			received: slipVerifyResult.data.receivingProxy,
 			expectedTail: promptPayId.slice(-4),
 		})
+		void logEventToWebhook(
+			`Payment Error`,
+			`Error: SlipReceiverMismatchError\n\nDetails\nPaymentID: ${paymentId}\nName: ${row.payerName}\nEmail:${row.payerEmail}\nPrice: ${row.price}\nSlipTransactionTimestamp: ${transDateObj.toISOString()}\nExpectedReceiver: ${process.env.PROMPTPAY_ID}\nReceiver(Last4): ${slipVerifyResult.data.receivingProxy}`,
+		)
 		return { status: 400, err: SlipUploadActionError.InvalidSlip }
 	}
 
@@ -239,6 +262,11 @@ export async function slipUploadAction(slipFile: File, paymentId: string): Promi
 
 			await tx.update(payment).set({ status: paymentStatusEnum.enumValues[1] }).where(eq(payment.id, paymentId))
 		})
+		void logEventToWebhook(
+			`Payment Success`,
+			`Details\nPaymentID: ${paymentId}\nName: ${row.payerName}\nEmail:${row.payerEmail}\nPrice: ${row.price}\nSlipTransactionTimestamp: ${transDateObj.toISOString()}\nSendingBank: ${slipVerifyResult.data.sendingBank}\nSenderName: ${slipVerifyResult.data.senderName}\nPrice: ${row.price}\nGroup: ${row.productName}`,
+			`https://famstaff.cpesu.com/payment/${paymentId}`,
+		)
 	} catch (e) {
 		console.error("DB transaction error:", e)
 		return { status: 500, err: SlipUploadActionError.UnknownError }

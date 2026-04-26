@@ -42,6 +42,7 @@ services:
       S3_URL: ${S3_URL:?S3_URL is required}
       S3_BUCKET_NAME: ${S3_BUCKET_NAME:?S3_BUCKET_NAME is required}
       PROMPTPAY_ID: ${PROMPTPAY_ID:?PROMPTPAY_ID is required}
+      DISCORD_WEBHOOK: ${DISCORD_WEBHOOK}
     healthcheck:
       test: ["CMD-SHELL", "curl -f http://localhost:3000/ || exit 1"]
       interval: 15s
