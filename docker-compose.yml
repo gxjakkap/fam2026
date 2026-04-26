@@ -6,10 +6,10 @@ services:
       - pg_data:/var/lib/postgresql/data
     environment:
       POSTGRES_DB: ${PG_DBNAME:-fam2026}
-      POSTGRES_USER: ${PG_USER:-fam2026}
+      POSTGRES_USER: ${PG_USER:-postgres}
       POSTGRES_PASSWORD: ${PG_PASSWORD:?PG_PASSWORD is required}
     healthcheck:
-      test: [ "CMD-SHELL", "pg_isready -U ${PG_USER:-fam2026} -d ${PG_DBNAME:-fam2026}" ]
+      test: ["CMD-SHELL", "pg_isready -U ${PG_USER:-postgres} -d ${PG_DBNAME:-fam2026}"]
       interval: 10s
       timeout: 5s
       retries: 5
@@ -23,21 +23,49 @@ services:
         condition: service_healthy
     environment:
       NODE_ENV: production
-      PORT: 8080
-      HOSTNAME: "0.0.0.0"
+      PORT: 3000
       PG_HOST: postgres
       PG_PORT: 5432
-      PG_USER: ${PG_USER:-fam2026}
+      PG_USER: ${PG_USER:-postgres}
       PG_PASSWORD: ${PG_PASSWORD:?PG_PASSWORD is required}
       PG_DBNAME: ${PG_DBNAME:-fam2026}
       BETTER_AUTH_SECRET: ${BETTER_AUTH_SECRET:?BETTER_AUTH_SECRET is required}
       BETTER_AUTH_URL: ${BETTER_AUTH_URL:?BETTER_AUTH_URL is required}
-    labels:
-      - "wud.watch=true"
-      - "wud.tag.include=^main$$"
-      - "wud.watch.digest=true"
+      RDCW_CLIENT_ID: ${RDCW_CLIENT_ID:?RDCW_CLIENT_ID is required}
+      RDCW_CLIENT_SECRET: ${RDCW_CLIENT_SECRET:?RDCW_CLIENT_SECRET is required}
+      S3_ACCESS_KEY_ID: ${S3_ACCESS_KEY_ID:?S3_ACCESS_KEY_ID is required}
+      S3_SECRET_ACCESS_KEY: ${S3_SECRET_ACCESS_KEY:?S3_SECRET_ACCESS_KEY is required}
+      S3_URL: ${S3_URL:?S3_URL is required}
+      S3_BUCKET_NAME: ${S3_BUCKET_NAME:?S3_BUCKET_NAME is required}
+      PROMPTPAY_ID: ${PROMPTPAY_ID:?PROMPTPAY_ID is required}
     healthcheck:
-      test: [ "CMD-SHELL", "curl -f http://localhost:8080/ || exit 1" ]
+      test: ["CMD-SHELL", "curl -f http://localhost:3000/ || exit 1"]
+      interval: 15s
+      timeout: 5s
+      retries: 3
+      start_period: 30s
+
+  staff:
+    image: ghcr.io/gxjakkap/fam2026-staff:main
+    restart: unless-stopped
+    pull_policy: always
+    depends_on:
+      postgres:
+        condition: service_healthy
+    environment:
+      NODE_ENV: production
+      PORT: 3037
+      PG_HOST: postgres
+      PG_PORT: 5432
+      PG_USER: ${PG_USER:-postgres}
+      PG_PASSWORD: ${PG_PASSWORD:?PG_PASSWORD is required}
+      PG_DBNAME: ${PG_DBNAME:-fam2026}
+      BETTER_AUTH_SECRET: ${BETTER_AUTH_SECRET:?BETTER_AUTH_SECRET is required}
+      BETTER_AUTH_URL: ${BETTER_AUTH_URL:?BETTER_AUTH_URL is required}
+      # Staff app specific
+      NEXT_PUBLIC_STAFFAPP_BASEURL: ${BETTER_AUTH_URL:?BETTER_AUTH_URL is required}
+    healthcheck:
+      test: ["CMD-SHELL", "curl -f http://localhost:3037/ || exit 1"]
       interval: 15s
       timeout: 5s
       retries: 3
@@ -55,20 +83,5 @@ services:
         condition: on-failure
         delay: 5s
 
-  wud:
-    image: getwud/wud:latest
-    restart: unless-stopped
-    volumes:
-      - /var/run/docker.sock:/var/run/docker.sock:ro
-      - wud_store:/store
-    environment:
-      WUD_WATCHER_LOCAL_WATCHALL: "false"
-      WUD_WATCHER_LOCAL_WATCHBYDEFAULT: "false"
-      WUD_REGISTRY_GHCR_URL: https://ghcr.io
-      WUD_REGISTRY_GHCR_TOKEN: ${GHCR_TOKEN:-}
-    ports:
-      - "3001:3000"
-
 volumes:
   pg_data:
-  wud_store:
