@@ -23,7 +23,9 @@ export function shapeErrors({ err }: any) {
 	}
 }
 
-export const unauthenticatedAction = createServerActionProcedure().experimental_shapeError(shapeErrors)
+export const unauthenticatedAction = createServerActionProcedure()
+	.experimental_shapeError(shapeErrors)
+	.handler(async () => {})
 
 export const authenticatedAction = createServerActionProcedure()
 	.experimental_shapeError(shapeErrors)
