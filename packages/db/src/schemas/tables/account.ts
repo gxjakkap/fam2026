@@ -7,9 +7,7 @@ export const account = pgTable(
 		id: text("id").primaryKey(),
 		accountId: text("account_id").notNull(),
 		providerId: text("provider_id").notNull(),
-		userId: text("user_id")
-			.notNull()
-			.references(() => user.id, { onDelete: "cascade" }),
+		userId: text("user_id").notNull().references(() => user.id),
 		accessToken: text("access_token"),
 		refreshToken: text("refresh_token"),
 		idToken: text("id_token"),
@@ -18,9 +16,7 @@ export const account = pgTable(
 		scope: text("scope"),
 		password: text("password"),
 		createdAt: timestamp("created_at").defaultNow().notNull(),
-		updatedAt: timestamp("updated_at")
-			.$onUpdate(() => /* @__PURE__ */ new Date())
-			.notNull(),
+		updatedAt: timestamp("updated_at").notNull(),
 	},
 	(table) => [index("account_userId_idx").on(table.userId)],
 )

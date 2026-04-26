@@ -1,5 +1,5 @@
 {
-  "id": "250e92c8-d112-48e2-b0bf-b87242c1e66a",
+  "id": "9568c962-3ecf-4b74-a7e1-3edd657e5880",
   "prevId": "00000000-0000-0000-0000-000000000000",
   "version": "7",
   "dialect": "postgresql",
@@ -116,12 +116,392 @@
           "columnsTo": [
             "id"
           ],
-          "onDelete": "cascade",
+          "onDelete": "no action",
           "onUpdate": "no action"
         }
       },
       "compositePrimaryKeys": {},
       "uniqueConstraints": {},
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "public.file": {
+      "name": "file",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "text",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "uploaded_by": {
+          "name": "uploaded_by",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "uploaded_at": {
+          "name": "uploaded_at",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        },
+        "mime_type": {
+          "name": "mime_type",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "type": {
+          "name": "type",
+          "type": "file_type",
+          "typeSchema": "public",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "size": {
+          "name": "size",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "file_key": {
+          "name": "file_key",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "file_name": {
+          "name": "file_name",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "file_uploaded_by_user_id_fk": {
+          "name": "file_uploaded_by_user_id_fk",
+          "tableFrom": "file",
+          "tableTo": "user",
+          "columnsFrom": [
+            "uploaded_by"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "public.payment": {
+      "name": "payment",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "text",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "status": {
+          "name": "status",
+          "type": "payment_status",
+          "typeSchema": "public",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "price": {
+          "name": "price",
+          "type": "numeric",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "payer_name": {
+          "name": "payer_name",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "product_name": {
+          "name": "product_name",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {},
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "public.payment_slip": {
+      "name": "payment_slip",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "text",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "payment_id": {
+          "name": "payment_id",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "trans_ref": {
+          "name": "trans_ref",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "amount": {
+          "name": "amount",
+          "type": "numeric",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "sender_name": {
+          "name": "sender_name",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "trans_date": {
+          "name": "trans_date",
+          "type": "date",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "trans_time": {
+          "name": "trans_time",
+          "type": "time",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "sending_bank": {
+          "name": "sending_bank",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "slip_image": {
+          "name": "slip_image",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "verified_at": {
+          "name": "verified_at",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "status": {
+          "name": "status",
+          "type": "payment_slip_status",
+          "typeSchema": "public",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "'verify_pending'"
+        },
+        "raw_response": {
+          "name": "raw_response",
+          "type": "jsonb",
+          "primaryKey": false,
+          "notNull": false
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "payment_slip_payment_id_payment_id_fk": {
+          "name": "payment_slip_payment_id_payment_id_fk",
+          "tableFrom": "payment_slip",
+          "tableTo": "payment",
+          "columnsFrom": [
+            "payment_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        },
+        "payment_slip_slip_image_file_id_fk": {
+          "name": "payment_slip_slip_image_file_id_fk",
+          "tableFrom": "payment_slip",
+          "tableTo": "file",
+          "columnsFrom": [
+            "slip_image"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {
+        "payment_slip_trans_ref_unique": {
+          "name": "payment_slip_trans_ref_unique",
+          "nullsNotDistinct": false,
+          "columns": [
+            "trans_ref"
+          ]
+        },
+        "payment_slip_slip_image_unique": {
+          "name": "payment_slip_slip_image_unique",
+          "nullsNotDistinct": false,
+          "columns": [
+            "slip_image"
+          ]
+        }
+      },
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "public.room": {
+      "name": "room",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "text",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "displayname": {
+          "name": "displayname",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "details": {
+          "name": "details",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "max_occupants": {
+          "name": "max_occupants",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "min_occupants": {
+          "name": "min_occupants",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "reserved_at": {
+          "name": "reserved_at",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "reserved_by": {
+          "name": "reserved_by",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "room_reserved_by_user_id_fk": {
+          "name": "room_reserved_by_user_id_fk",
+          "tableFrom": "room",
+          "tableTo": "user",
+          "columnsFrom": [
+            "reserved_by"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {
+        "room_reserved_by_unique": {
+          "name": "room_reserved_by_unique",
+          "nullsNotDistinct": false,
+          "columns": [
+            "reserved_by"
+          ]
+        }
+      },
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "public.room_occupant": {
+      "name": "room_occupant",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "text",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "room_id": {
+          "name": "room_id",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "reservation_id": {
+          "name": "reservation_id",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "room_occupant_room_id_room_id_fk": {
+          "name": "room_occupant_room_id_room_id_fk",
+          "tableFrom": "room_occupant",
+          "tableTo": "room",
+          "columnsFrom": [
+            "room_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {
+        "room_occupant_reservation_id_unique": {
+          "name": "room_occupant_reservation_id_unique",
+          "nullsNotDistinct": false,
+          "columns": [
+            "reservation_id"
+          ]
+        }
+      },
       "policies": {},
       "checkConstraints": {},
       "isRLSEnabled": false
@@ -214,7 +594,7 @@
           "columnsTo": [
             "id"
           ],
-          "onDelete": "cascade",
+          "onDelete": "no action",
           "onUpdate": "no action"
         }
       },
@@ -298,6 +678,13 @@
           "type": "text",
           "primaryKey": false,
           "notNull": false
+        },
+        "bypass_countdown": {
+          "name": "bypass_countdown",
+          "type": "boolean",
+          "primaryKey": false,
+          "notNull": true,
+          "default": false
         },
         "banned": {
           "name": "banned",
@@ -410,7 +797,46 @@
       "isRLSEnabled": false
     }
   },
-  "enums": {},
+  "enums": {
+    "public.common_food_type": {
+      "name": "common_food_type",
+      "schema": "public",
+      "values": [
+        "normal",
+        "halal",
+        "vegetarian",
+        "seafood_allergy",
+        "other"
+      ]
+    },
+    "public.file_type": {
+      "name": "file_type",
+      "schema": "public",
+      "values": [
+        "payment_slip",
+        "secret_discount_proof"
+      ]
+    },
+    "public.payment_slip_status": {
+      "name": "payment_slip_status",
+      "schema": "public",
+      "values": [
+        "verify_pending",
+        "valid",
+        "invalid"
+      ]
+    },
+    "public.payment_status": {
+      "name": "payment_status",
+      "schema": "public",
+      "values": [
+        "pending_secret_discount_approval",
+        "pending",
+        "verified",
+        "failed"
+      ]
+    }
+  },
   "schemas": {},
   "sequences": {},
   "roles": {},

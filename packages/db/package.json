@@ -20,7 +20,7 @@
 		"db:generate": "run-s db:gen-schema db:dz:gen"
 	},
 	"dependencies": {
-		"@repo/env": "workspace:*",
+		"dotenv": "^17.2.1",
 		"drizzle-orm": "^0.36.4",
 		"pg": "^8.13.1",
 		"postgres": "^3.4.5"
@@ -28,7 +28,6 @@
 	"devDependencies": {
 		"@repo/biome-config": "workspace:*",
 		"@types/pg": "^8.11.10",
-		"dotenv": "^17.2.1",
 		"dotenv-cli": "^11.0.0",
 		"drizzle-kit": "^0.28.1",
 		"npm-run-all2": "^8.0.4",

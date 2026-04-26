@@ -1,6 +1,9 @@
 import type { Metadata } from "next"
 import "./globals.css"
+import { JetBrains_Mono } from "next/font/google";
+import { cn } from "@/lib/utils";
 
+const jetbrainsMono = JetBrains_Mono({subsets:['latin'],variable:'--font-mono'});
 
 export const metadata: Metadata = {
   title: "CPE Family 2026",
@@ -15,7 +18,7 @@ export default function RootLayout({
   return (
     <html
       lang="en"
-      className={`h-full antialiased`}
+      className={cn("h-full", "antialiased", "font-mono", jetbrainsMono.variable)}
     >
       <head>
         <link rel="stylesheet" href="https://use.typekit.net/osz8kmu.css"></link>

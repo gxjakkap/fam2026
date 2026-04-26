@@ -1,11 +1,12 @@
+import { apiKey } from "@better-auth/api-key"
 import { db } from "@repo/db"
-import { serverEnv } from "@repo/env"
+import * as schema from "@repo/db/schema"
 import { betterAuth } from "better-auth"
 import { drizzleAdapter } from "better-auth/adapters/drizzle"
+import { nextCookies } from "better-auth/next-js"
 import { admin, username } from "better-auth/plugins"
 import { createAccessControl } from "better-auth/plugins/access"
 import { adminAc, defaultStatements } from "better-auth/plugins/admin/access"
-
 import { Roles } from "./roles"
 
 const statement = {
@@ -29,12 +30,24 @@ const staffRole = ac.newRole({
 export const auth = betterAuth({
 	database: drizzleAdapter(db, {
 		provider: "pg",
+		schema,
 	}),
 	emailAndPassword: {
 		enabled: true,
 	},
 	plugins: [
+		apiKey({
+			defaultPrefix: "fam",
+			enableSessionForAPIKeys: true,
+			rateLimit: {
+				enabled: false,
+			},
+			keyExpiration: {
+				defaultExpiresIn: null,
+			},
+		}),
 		username(),
+		nextCookies(),
 		admin({
 			ac,
 			defaultRole: Roles.USER,
@@ -46,7 +59,5 @@ export const auth = betterAuth({
 			},
 		}),
 	],
-	trustedOrigins: [
-		serverEnv.BETTER_AUTH_URL,
-	],
+	trustedOrigins: process.env.BETTER_AUTH_URL ? [process.env.BETTER_AUTH_URL] : [],
 })

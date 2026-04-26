@@ -1,12 +1,10 @@
-import { relations } from "drizzle-orm";
-import { file } from "../tables/file";
-import { user } from "../tables/user";
-import { reservation } from "../tables/reservation";
+import { relations } from "drizzle-orm"
+import { file } from "../tables/file"
+import { user } from "../tables/user"
 
-export const fileRelation = relations(file, ({ one }) => ({
-        user: one(user, {
-            fields: [file.uploadedBy],
-            references: [user.id]
-        })
-    }
-))
+export const fileRelations = relations(file, ({ one }) => ({
+	uploadedByUser: one(user, {
+		fields: [file.uploadedBy],
+		references: [user.id],
+	}),
+}))

@@ -23,8 +23,7 @@ ENV NODE_ENV=production
 
 COPY --from=pruner /app/out/full/ ./
 RUN bun run build --filter=web
-# Compile the migrate script into a standalone executable inside the builder
-RUN bun build --compile ./packages/db/scripts/migrate.ts --outfile ./migrate --minify
+
 
 FROM oven/bun:latest AS runner
 WORKDIR /app
@@ -38,10 +37,6 @@ COPY --from=builder --chown=bunuser:bunuser /app/apps/web/public ./apps/web/publ
 COPY --from=builder --chown=bunuser:bunuser /app/apps/web/.next/standalone ./
 COPY --from=builder --chown=bunuser:bunuser /app/apps/web/.next/static ./apps/web/.next/static
 
-# Copy standalone migration runner and sql files
-COPY --from=builder --chown=bunuser:bunuser /app/packages/db/drizzle ./drizzle
-COPY --from=builder --chown=bunuser:bunuser /app/migrate ./migrate
-
 USER bunuser
 
 EXPOSE 8080
@@ -49,4 +44,4 @@ ENV NODE_ENV=production
 ENV PORT=8080
 ENV HOSTNAME="0.0.0.0"
 
-CMD ["sh", "-c", "./migrate && bun apps/web/server.js"]
+CMD ["bun apps/web/server.js"]

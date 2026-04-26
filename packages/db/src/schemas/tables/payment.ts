@@ -1,13 +1,11 @@
-import { numeric, pgTable, uuid } from "drizzle-orm/pg-core";
-import { paymentStatusEnum } from "../enums/payment-status.enum";
-import { paymentForEnum } from "../enums/payment-for.enum";
+import { numeric, pgTable, text, uuid } from "drizzle-orm/pg-core"
+import { paymentStatusEnum } from "../enums/payment-status.enum"
 
 export const payment = pgTable("payment", {
-    id: uuid("id").notNull().defaultRandom(),
-    status: paymentStatusEnum("status").notNull(),
-    for: paymentForEnum("for").notNull(),
-    basePrice: numeric("base_price").notNull(),
-    addonsPrice: numeric("addons_price").notNull(),
-    totalAmount: numeric("total_amount").notNull(),
-    reservationId: uuid("reservation_id").notNull()
+	id: uuid("id").primaryKey().defaultRandom(),
+	status: paymentStatusEnum("status").notNull(),
+	price: numeric("price").notNull(),
+	payerName: text("payer_name").notNull(),
+	payerEmail: text("payer_email").notNull(),
+	productName: text("product_name").notNull(),
 })

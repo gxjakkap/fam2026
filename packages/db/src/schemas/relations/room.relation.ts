@@ -1,12 +1,12 @@
-import { relations } from "drizzle-orm";
-import { room } from "../tables/room";
-import { reservation } from "../tables/reservation";
-import { roomOccupant } from "../tables/room-occupant";
+import { relations } from "drizzle-orm"
+import { roomOccupant } from "../tables/room-occupant"
+import { room } from "../tables/room"
+import { user } from "../tables/user"
 
 export const roomRelations = relations(room, ({ one, many }) => ({
-    reservedBy: one(reservation, {
+    reservedByUser: one(user, {
         fields: [room.reservedBy],
-        references: [reservation.id]
+        references: [user.id],
     }),
-    occupants: many(roomOccupant)
+    occupants: many(roomOccupant),
 }))

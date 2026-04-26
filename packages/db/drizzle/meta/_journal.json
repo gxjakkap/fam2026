@@ -5,15 +5,36 @@
     {
       "idx": 0,
       "version": "7",
-      "when": 1776043806523,
-      "tag": "0000_famous_orphan",
+      "when": 1777203539922,
+      "tag": "0000_thin_puppet_master",
       "breakpoints": true
     },
     {
       "idx": 1,
       "version": "7",
-      "when": 1776247347374,
-      "tag": "0001_certain_marvel_apes",
+      "when": 1777206441929,
+      "tag": "0001_free_brother_voodoo",
+      "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1777206512562,
+      "tag": "0002_watery_squadron_sinister",
+      "breakpoints": true
+    },
+    {
+      "idx": 3,
+      "version": "7",
+      "when": 1777206878758,
+      "tag": "0003_loose_meltdown",
+      "breakpoints": true
+    },
+    {
+      "idx": 4,
+      "version": "7",
+      "when": 1777207036451,
+      "tag": "0004_tranquil_joshua_kane",
       "breakpoints": true
     }
   ]

@@ -1,7 +1,8 @@
-import { pgTable, text, uuid } from "drizzle-orm/pg-core";
+import { pgTable, text } from "drizzle-orm/pg-core"
+import { room } from "./room"
 
 export const roomOccupant = pgTable("room_occupant", {
-    id: uuid("id").primaryKey().defaultRandom(),
-    roomId: text("room_id").notNull(),
-    reservationId: uuid("reservation_id").notNull().unique()
+    id: text("id").primaryKey(),
+    roomId: text("room_id").notNull().references(() => room.id),
+    reservationId: text("reservation_id").notNull().unique(),
 })

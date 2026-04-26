@@ -7,15 +7,12 @@ export const user = pgTable("user", {
 	emailVerified: boolean("email_verified").default(false).notNull(),
 	image: text("image"),
 	createdAt: timestamp("created_at").defaultNow().notNull(),
-	updatedAt: timestamp("updated_at")
-		.defaultNow()
-		.$onUpdate(() => /* @__PURE__ */ new Date())
-		.notNull(),
+	updatedAt: timestamp("updated_at").defaultNow().notNull(),
 	username: text("username").unique(),
 	displayUsername: text("display_username"),
 	role: text("role"),
+	bypassCountdown: boolean("bypass_countdown").notNull().default(false),
 	banned: boolean("banned").default(false),
 	banReason: text("ban_reason"),
 	banExpires: timestamp("ban_expires"),
-	bypassCountdown: boolean("bypass_countdown").notNull().default(false)
 })
