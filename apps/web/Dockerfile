@@ -1,4 +1,4 @@
-FROM oven/bun:latest AS base
+FROM oven/bun:1.3.9 AS base
 WORKDIR /app
 
 RUN apt-get update -y && apt-get install -y --no-install-recommends \
@@ -7,13 +7,14 @@ RUN apt-get update -y && apt-get install -y --no-install-recommends \
 
 FROM base AS pruner
 
-RUN bun install -g turbo@latest
+RUN bun install -g turbo@2.9.6
 COPY . .
 RUN turbo prune web --docker
 
 FROM base AS deps
 
 COPY --from=pruner /app/out/json/ ./
+COPY --from=pruner /app/bun.lock ./
 RUN bun install --frozen-lockfile
 
 FROM deps AS builder
@@ -25,7 +26,7 @@ COPY --from=pruner /app/out/full/ ./
 RUN bun run build --filter=web
 
 
-FROM oven/bun:latest AS runner
+FROM oven/bun:1.3.9 AS runner
 WORKDIR /app
 
 RUN groupadd --system --gid 1001 bunuser \
@@ -44,4 +45,4 @@ ENV NODE_ENV=production
 ENV PORT=8080
 ENV HOSTNAME="0.0.0.0"
 
-CMD ["bun apps/web/server.js"]
+CMD ["bun", "apps/web/server.js"]
