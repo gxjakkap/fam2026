@@ -1,3 +1,4 @@
+/** biome-ignore-all lint/performance/noImgElement: <> */
 "use client"
 
 import { zodResolver } from "@hookform/resolvers/zod"
@@ -63,19 +64,23 @@ export function PaymentPay({
 				setStatus("failed")
 				switch (res.err) {
 					case SlipUploadActionError.InvalidSlip:
-						setErrorMessage("Invalid slip or QR code. Please try again with a valid slip.")
+						setErrorMessage(
+							"สลิปผิดพลาดหรือไม่พบ QR Code สำหรับตรวจสอบ โปรดลองอีกครั้ง หากแน่ใจว่านี่คือข้อผิดพลาดของระบบโปรดติดต่อทีมงานที่ IG: cpe_studentunion",
+						)
 						break
 					case SlipUploadActionError.ProviderRateLimited:
 						setErrorMessage("Verification service is busy. Please try again in a moment.")
 						break
 					case SlipUploadActionError.SlipUploadError:
-						setErrorMessage("Failed to upload slip image. Please try again.")
+						setErrorMessage("อัปโหลดสลิปไม่สำเร็จ โปรดลองอีกครั้ง")
 						break
 					case SlipUploadActionError.ForbiddenError:
-						setErrorMessage("Payment not found or already completed.")
+						setErrorMessage("ไม่พบการจ่ายเงินที่ยังไม่สำเร็จ หากนี่คือข้อผิดพลาดโปรดติดต่อทีมงานที่ IG: cpe_studentunion")
 						break
 					default:
-						setErrorMessage("An unknown error occurred. Please try again.")
+						setErrorMessage(
+							"เกิดข้อผิดพลาดบางอย่าง โปรดลองอีกครั้ง หากแน่ใจว่านี่คือข้อผิดพลาดของระบบโปรดติดต่อทีมงานที่ IG: cpe_studentunion",
+						)
 				}
 			}
 		} catch {
@@ -99,10 +104,9 @@ export function PaymentPay({
 						</div>
 						<Separator />
 						{/* Payment QR Image */}
-						<div className="relative flex justify-center py-4">
-							{/** biome-ignore lint/performance/noImgElement: <> */}
+						<div className="flex flex-col gap-y-2 justify-center items-center py-4">
+							<img src="/Thai_QR_Logo.svg" alt="Thai QR Logo" className="h-14" />
 							<img src={qrLink} alt="Payment QR" className="w-48 h-48 object-contain" />
-							<img src="/Thai_QR_Logo.svg" alt="Thai QR Logo" className="absolute inset-0 m-auto w-16 h-16" />
 						</div>
 						<p className="text-center text-sm text-muted-foreground">สแกนจ่าย หรือ {promptpayInfo}</p>
 						<Separator />
