@@ -40,9 +40,8 @@ COPY --from=builder --chown=bunuser:bunuser /app/apps/web/.next/static ./apps/we
 
 USER bunuser
 
-EXPOSE 8080
+EXPOSE 3000
 ENV NODE_ENV=production
-ENV PORT=8080
 ENV HOSTNAME="0.0.0.0"
 
 CMD ["bun", "apps/web/server.js"]
