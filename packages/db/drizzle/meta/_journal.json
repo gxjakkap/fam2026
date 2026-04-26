@@ -36,6 +36,13 @@
       "when": 1777207036451,
       "tag": "0004_tranquil_joshua_kane",
       "breakpoints": true
+    },
+    {
+      "idx": 5,
+      "version": "7",
+      "when": 1777234827098,
+      "tag": "0005_hard_harrier",
+      "breakpoints": true
     }
   ]
 }

@@ -1,4 +1,4 @@
-import { numeric, pgTable, text, uuid } from "drizzle-orm/pg-core"
+import { numeric, pgTable, text, timestamp, uuid } from "drizzle-orm/pg-core"
 import { paymentStatusEnum } from "../enums/payment-status.enum"
 
 export const payment = pgTable("payment", {
@@ -8,4 +8,5 @@ export const payment = pgTable("payment", {
 	payerName: text("payer_name").notNull(),
 	payerEmail: text("payer_email").notNull(),
 	productName: text("product_name").notNull(),
+	createdAt: timestamp("created_at").notNull().defaultNow(),
 })

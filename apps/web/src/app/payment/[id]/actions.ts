@@ -5,6 +5,7 @@ import { PutObjectCommand, S3Client } from "@aws-sdk/client-s3"
 import { db } from "@repo/db"
 import { eq } from "@repo/db/orm"
 import { file, payment, paymentSlip, paymentSlipStatusEnum, paymentStatusEnum } from "@repo/db/schema"
+import { isBefore } from "date-fns"
 import { SlipUploadActionError, type SlipUploadActionRes } from "./types"
 
 enum SlipVerifyError {
@@ -20,6 +21,7 @@ interface SlipVerifySuccess {
 		amount: string
 		sendingBank: string
 		senderName: string
+		receivingProxy: string
 		transDate: string
 		transTime: string
 		raw: unknown
@@ -33,7 +35,10 @@ interface SlipVerifyFailure {
 
 type SlipVerifyResult = SlipVerifySuccess | SlipVerifyFailure
 
-const verifySlip = async (data: { payload?: string; file?: File | Buffer }, amount: number): Promise<SlipVerifyResult> => {
+const verifySlip = async (
+	data: { payload?: string; file?: File | Buffer },
+	amount: number,
+): Promise<SlipVerifyResult> => {
 	const endpoint = "https://suba.rdcw.co.th/v2/inquiry"
 
 	console.log("RDCW config:", {
@@ -119,6 +124,7 @@ const verifySlip = async (data: { payload?: string; file?: File | Buffer }, amou
 			amount: dataRes.amount,
 			sendingBank: dataRes.sendingBank,
 			senderName: dataRes.sender?.name ?? "",
+			receivingProxy: dataRes.receiver?.proxy.value ?? "",
 			transDate: dataRes.date ?? "",
 			transTime: dataRes.time ?? "",
 			raw: body,
@@ -149,6 +155,20 @@ export async function slipUploadAction(slipFile: File, paymentId: string): Promi
 		else if (slipVerifyResult.err === SlipVerifyError.RateLimitError)
 			return { status: 429, err: SlipUploadActionError.ProviderRateLimited }
 		else return { status: 500, err: SlipUploadActionError.UnknownError }
+	}
+
+	// check transaction time
+	if (isBefore(new Date(slipVerifyResult.data.transDate), row.createdAt)) {
+		return { status: 400, err: SlipUploadActionError.InvalidSlip }
+	}
+	// check for amount
+	if (parseFloat(slipVerifyResult.data.amount) !== parseFloat(row.price)) {
+		return { status: 400, err: SlipUploadActionError.InvalidSlip }
+	}
+
+	// check for receiver
+	if (slipVerifyResult.data.receivingProxy.slice(-4) !== process.env.PROMPTPAY_ID?.slice(-4)) {
+		return { status: 400, err: SlipUploadActionError.InvalidSlip }
 	}
 
 	// Upload slip image to S3
