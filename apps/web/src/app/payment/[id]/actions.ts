@@ -266,7 +266,7 @@ export async function slipUploadAction(slipFile: File, paymentId: string): Promi
 		void logEventToWebhook(
 			`Payment Success`,
 			`Details\nPaymentID: ${paymentId}\nName: ${row.payerName}\nEmail:${row.payerEmail}\nPrice: ${row.price}\nSlipTransactionTimestamp: ${transDateObj.toISOString()}\nSendingBank: ${BankDict[slipVerifyResult.data.sendingBank]}\nSenderName: ${slipVerifyResult.data.senderName}\nPrice: ${row.price}\nGroup: ${row.productName}`,
-			`https://famstaff.cpesu.com/payment/${paymentId}`,
+			`https://famstaff.cpesu.com/payments/${paymentId}`,
 		)
 	} catch (e) {
 		console.error("DB transaction error:", e)
