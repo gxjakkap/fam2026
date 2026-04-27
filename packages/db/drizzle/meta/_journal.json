@@ -43,6 +43,13 @@
       "when": 1777234827098,
       "tag": "0005_hard_harrier",
       "breakpoints": true
+    },
+    {
+      "idx": 6,
+      "version": "7",
+      "when": 1777278039862,
+      "tag": "0006_many_nitro",
+      "breakpoints": true
     }
   ]
 }
