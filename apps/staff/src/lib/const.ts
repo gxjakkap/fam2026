@@ -1,6 +1,3 @@
-export const CURRENCY_SYMBOL = "฿"
-export const SLIP_MAX_FILE_SIZE = 10 * 1024 * 1024
-
 export const BankDict: { [key: string]: string } = {
 	"002": "Bangkok Bank Public Company Limited (BBL)",
 	"004": "Kasikornbank Public Company Limited (KBANK)",

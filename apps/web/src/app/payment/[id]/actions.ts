@@ -6,6 +6,7 @@ import { db } from "@repo/db"
 import { eq } from "@repo/db/orm"
 import { file, payment, paymentSlip, paymentSlipStatusEnum, paymentStatusEnum } from "@repo/db/schema"
 import { isBefore } from "date-fns"
+import { BankDict } from "@/lib/const"
 import { logEventToWebhook } from "@/lib/discord-webhook"
 import { SlipUploadActionError, type SlipUploadActionRes } from "./types"
 
@@ -264,7 +265,7 @@ export async function slipUploadAction(slipFile: File, paymentId: string): Promi
 		})
 		void logEventToWebhook(
 			`Payment Success`,
-			`Details\nPaymentID: ${paymentId}\nName: ${row.payerName}\nEmail:${row.payerEmail}\nPrice: ${row.price}\nSlipTransactionTimestamp: ${transDateObj.toISOString()}\nSendingBank: ${slipVerifyResult.data.sendingBank}\nSenderName: ${slipVerifyResult.data.senderName}\nPrice: ${row.price}\nGroup: ${row.productName}`,
+			`Details\nPaymentID: ${paymentId}\nName: ${row.payerName}\nEmail:${row.payerEmail}\nPrice: ${row.price}\nSlipTransactionTimestamp: ${transDateObj.toISOString()}\nSendingBank: ${BankDict[slipVerifyResult.data.sendingBank]}\nSenderName: ${slipVerifyResult.data.senderName}\nPrice: ${row.price}\nGroup: ${row.productName}`,
 			`https://famstaff.cpesu.com/payment/${paymentId}`,
 		)
 	} catch (e) {

@@ -9,14 +9,9 @@ import { file, payment, paymentSlip } from "@repo/db/schema"
 
 import BackwardButton from "@/components/backward-button"
 import { PaymentStatusBadge } from "@/components/payment-status-badge"
-import {
-	Card,
-	CardContent,
-	CardDescription,
-	CardHeader,
-	CardTitle,
-} from "@/components/ui/card"
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Separator } from "@/components/ui/separator"
+import { BankDict } from "@/lib/const"
 import { getPresignedURL } from "@/lib/files"
 
 interface PaymentDetailPageProps {
@@ -39,9 +34,7 @@ function PaymentDetailItem({ label, value }: PaymentDetailItemProps) {
 	)
 }
 
-export default async function PaymentDetailPage({
-	params,
-}: PaymentDetailPageProps) {
+export default async function PaymentDetailPage({ params }: PaymentDetailPageProps) {
 	const { paymentId } = await params
 
 	const [paymentRecord] = await db
@@ -92,9 +85,7 @@ export default async function PaymentDetailPage({
 				.limit(1)
 		: []
 
-	const slipPreviewUrl = slipFileRecord
-		? await getPresignedURL(slipFileRecord.fileKey)
-		: null
+	const slipPreviewUrl = slipFileRecord ? await getPresignedURL(slipFileRecord.fileKey) : null
 
 	const formatCurrency = (value: string) => {
 		const parsed = Number(value)
@@ -127,9 +118,7 @@ export default async function PaymentDetailPage({
 		}).format(new Date(value))
 	}
 
-	const slipRawResponse = slipRecord?.rawResponse
-		? JSON.stringify(slipRecord.rawResponse, null, 2)
-		: null
+	const slipRawResponse = slipRecord?.rawResponse ? JSON.stringify(slipRecord.rawResponse, null, 2) : null
 
 	return (
 		<div className="container mx-auto space-y-6 px-6 py-8">
@@ -137,9 +126,7 @@ export default async function PaymentDetailPage({
 				<BackwardButton />
 				<div>
 					<h1 className="text-2xl font-bold">Payment {paymentRecord.id}</h1>
-					<p className="text-muted-foreground text-sm">
-						View payment and slip details.
-					</p>
+					<p className="text-muted-foreground text-sm">View payment and slip details.</p>
 				</div>
 			</div>
 
@@ -156,18 +143,9 @@ export default async function PaymentDetailPage({
 							<PaymentStatusBadge status={paymentRecord.status} />
 						</div>
 					</div>
-					<PaymentDetailItem
-						label="Price"
-						value={formatCurrency(paymentRecord.price)}
-					/>
-					<PaymentDetailItem
-						label="Payer name"
-						value={paymentRecord.payerName}
-					/>
-					<PaymentDetailItem
-						label="Product name"
-						value={paymentRecord.productName}
-					/>
+					<PaymentDetailItem label="Price" value={formatCurrency(paymentRecord.price)} />
+					<PaymentDetailItem label="Payer name" value={paymentRecord.payerName} />
+					<PaymentDetailItem label="Product name" value={paymentRecord.productName} />
 				</CardContent>
 			</Card>
 
@@ -175,9 +153,7 @@ export default async function PaymentDetailPage({
 				<CardHeader>
 					<CardTitle>Payment slip</CardTitle>
 					<CardDescription>
-						{slipRecord
-							? "Slip record and uploaded file details."
-							: "No payment slip is attached to this payment."}
+						{slipRecord ? "Slip record and uploaded file details." : "No payment slip is attached to this payment."}
 					</CardDescription>
 				</CardHeader>
 				<CardContent>
@@ -186,54 +162,24 @@ export default async function PaymentDetailPage({
 					) : (
 						<div className="space-y-4">
 							<PaymentDetailItem label="Slip ID" value={slipRecord.id} />
-							<PaymentDetailItem
-								label="Transaction reference"
-								value={slipRecord.transRef}
-							/>
-							<PaymentDetailItem
-								label="Slip amount"
-								value={formatCurrency(slipRecord.amount)}
-							/>
-							<PaymentDetailItem
-								label="Sender name"
-								value={slipRecord.senderName ?? "-"}
-							/>
-							<PaymentDetailItem
-								label="Transaction date"
-								value={formatDate(slipRecord.transDate)}
-							/>
-							<PaymentDetailItem
-								label="Transaction time"
-								value={slipRecord.transTime ?? "-"}
-							/>
+							<PaymentDetailItem label="Transaction reference" value={slipRecord.transRef} />
+							<PaymentDetailItem label="Slip amount" value={formatCurrency(slipRecord.amount)} />
+							<PaymentDetailItem label="Sender name" value={slipRecord.senderName ?? "-"} />
+							<PaymentDetailItem label="Transaction date" value={formatDate(slipRecord.transDate)} />
+							<PaymentDetailItem label="Transaction time" value={slipRecord.transTime ?? "-"} />
 							<PaymentDetailItem
 								label="Sending bank"
-								value={slipRecord.sendingBank ?? "-"}
+								value={slipRecord.sendingBank ? BankDict[slipRecord.sendingBank] : "-"}
 							/>
-							<PaymentDetailItem
-								label="Slip status"
-								value={slipRecord.status}
-							/>
-							<PaymentDetailItem
-								label="Verified at"
-								value={formatDateTime(slipRecord.verifiedAt)}
-							/>
+							<PaymentDetailItem label="Slip status" value={slipRecord.status} />
+							<PaymentDetailItem label="Verified at" value={formatDateTime(slipRecord.verifiedAt)} />
 
 							{slipFileRecord ? (
 								<>
 									<Separator />
-									<PaymentDetailItem
-										label="File name"
-										value={slipFileRecord.fileName}
-									/>
-									<PaymentDetailItem
-										label="MIME type"
-										value={slipFileRecord.mimeType}
-									/>
-									<PaymentDetailItem
-										label="File size"
-										value={`${slipFileRecord.size.toLocaleString("th-TH")} bytes`}
-									/>
+									<PaymentDetailItem label="File name" value={slipFileRecord.fileName} />
+									<PaymentDetailItem label="MIME type" value={slipFileRecord.mimeType} />
+									<PaymentDetailItem label="File size" value={`${slipFileRecord.size.toLocaleString("th-TH")} bytes`} />
 									{slipPreviewUrl ? (
 										<div className="grid grid-cols-1 gap-1 text-sm sm:grid-cols-[180px_1fr] sm:gap-4">
 											<p className="text-muted-foreground font-medium">Slip preview</p>
@@ -256,9 +202,7 @@ export default async function PaymentDetailPage({
 								<>
 									<Separator />
 									<div className="space-y-2">
-										<p className="text-muted-foreground text-sm font-medium">
-											Raw response
-										</p>
+										<p className="text-muted-foreground text-sm font-medium">Raw response</p>
 										<pre className="bg-muted max-h-80 overflow-auto rounded-md border p-3 text-xs">
 											{slipRawResponse}
 										</pre>
