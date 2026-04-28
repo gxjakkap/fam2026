@@ -4,7 +4,7 @@ import { headers } from "next/headers"
 import { z } from "zod"
 
 import { auth } from "@/lib/auth"
-import { StaffRolesEnum } from "@/lib/auth/role"
+import { AdminRoles, StaffRolesEnum } from "@/lib/auth/role"
 import { ForbiddenError } from "@/lib/errors"
 import { authenticatedAction } from "@/lib/safe-action"
 
@@ -20,7 +20,8 @@ export const addStaffAccount = authenticatedAction
 		}),
 	)
 	.handler(async ({ ctx, input }) => {
-		if (ctx.user.role !== "admin") {
+		// biome-ignore lint/suspicious/noExplicitAny: role union from auth types
+		if (!AdminRoles.includes(ctx.user.role as any)) {
 			throw new ForbiddenError()
 		}
 
@@ -46,7 +47,8 @@ export const deleteStaffAccount = authenticatedAction
 		}),
 	)
 	.handler(async ({ ctx, input }) => {
-		if (ctx.user.role !== "admin") {
+		// biome-ignore lint/suspicious/noExplicitAny: role union from auth types
+		if (!AdminRoles.includes(ctx.user.role as any)) {
 			throw new ForbiddenError()
 		}
 
@@ -68,7 +70,8 @@ export const editStaffAccount = authenticatedAction
 		}),
 	)
 	.handler(async ({ ctx, input }) => {
-		if (ctx.user.role !== "admin") {
+		// biome-ignore lint/suspicious/noExplicitAny: role union from auth types
+		if (!AdminRoles.includes(ctx.user.role as any)) {
 			throw new ForbiddenError()
 		}
 
@@ -94,7 +97,8 @@ export const editStaffAccount = authenticatedAction
 	})
 
 export const listApiKeys = authenticatedAction.createServerAction().handler(async ({ ctx }) => {
-	if (ctx.user.role !== "admin" && ctx.user.role !== "super_admin") {
+	// biome-ignore lint/suspicious/noExplicitAny: role union from auth types
+	if (!AdminRoles.includes(ctx.user.role as any)) {
 		throw new Error("Unauthorized")
 	}
 	const apiKeys = await auth.api.listApiKeys({
@@ -112,7 +116,8 @@ export const createApiKey = authenticatedAction
 		}),
 	)
 	.handler(async ({ ctx, input }) => {
-		if (ctx.user.role !== "admin" && ctx.user.role !== "super_admin") {
+		// biome-ignore lint/suspicious/noExplicitAny: role union from auth types
+		if (!AdminRoles.includes(ctx.user.role as any)) {
 			throw new Error("Unauthorized")
 		}
 		const apiKey = await auth.api.createApiKey({
@@ -129,7 +134,8 @@ export const deleteApiKey = authenticatedAction
 	.createServerAction()
 	.input(z.object({ keyId: z.string() }))
 	.handler(async ({ ctx, input }) => {
-		if (ctx.user.role !== "admin" && ctx.user.role !== "super_admin") {
+		// biome-ignore lint/suspicious/noExplicitAny: role union from auth types
+		if (!AdminRoles.includes(ctx.user.role as any)) {
 			throw new ForbiddenError()
 		}
 		const result = await auth.api.deleteApiKey({
@@ -142,7 +148,8 @@ export const resetApiKeyRateLimit = authenticatedAction
 	.createServerAction()
 	.input(z.object({ keyId: z.string() }))
 	.handler(async ({ ctx, input }) => {
-		if (ctx.user.role !== "admin" && ctx.user.role !== "super_admin") {
+		// biome-ignore lint/suspicious/noExplicitAny: role union from auth types
+		if (!AdminRoles.includes(ctx.user.role as any)) {
 			throw new ForbiddenError()
 		}
 		await auth.api.deleteApiKey({
