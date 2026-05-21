@@ -13,6 +13,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Separator } from "@/components/ui/separator"
 import { BankDict } from "@/lib/const"
 import { getPresignedURL } from "@/lib/files"
+import { OverrideSlipDialog } from "./_components/override-slip-dialog"
 
 interface PaymentDetailPageProps {
 	params: Promise<{
@@ -120,14 +121,17 @@ export default async function PaymentDetailPage({ params }: PaymentDetailPagePro
 
 	const slipRawResponse = slipRecord?.rawResponse ? JSON.stringify(slipRecord.rawResponse, null, 2) : null
 
+	const canOverride = !slipRecord && paymentRecord.status !== "verified"
+
 	return (
 		<div className="container mx-auto space-y-6 px-6 py-8">
-			<div className="flex items-center gap-3">
+			<div className="flex flex-wrap items-center gap-3">
 				<BackwardButton />
-				<div>
+				<div className="flex-1">
 					<h1 className="text-2xl font-bold">Payment {paymentRecord.id}</h1>
 					<p className="text-muted-foreground text-sm">View payment and slip details.</p>
 				</div>
+				<OverrideSlipDialog paymentId={paymentRecord.id} disabled={!canOverride} />
 			</div>
 
 			<Card>
