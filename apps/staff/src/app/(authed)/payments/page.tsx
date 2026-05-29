@@ -13,6 +13,7 @@ import {
 } from "@/components/ui/card"
 
 import { PaymentsTable } from "./payments-table"
+import { CreatePaymentDialog } from "./create-payment-dialog"
 
 export default async function PaymentsPage() {
 	const payments = await db
@@ -36,11 +37,14 @@ export default async function PaymentsPage() {
 	return (
 		<div className="container mx-auto px-6 py-8">
 			<Card>
-				<CardHeader>
-					<CardTitle className="text-2xl">Payments</CardTitle>
-					<CardDescription>
-						All payment records and current status.
-					</CardDescription>
+				<CardHeader className="flex flex-row items-start justify-between space-y-0">
+					<div>
+						<CardTitle className="text-2xl">Payments</CardTitle>
+						<CardDescription>
+							All payment records and current status.
+						</CardDescription>
+					</div>
+					<CreatePaymentDialog />
 				</CardHeader>
 				<CardContent>
 					<PaymentsTable payments={paymentRows} />
